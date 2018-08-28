@@ -206,6 +206,7 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         buffer.clear (i, 0, buffer.getNumSamples());
     
     updateGraph();
+    mainProcessor->processBlock (buffer, midiMessages);
 }
 
 void FilterAudioProcessor::updateGraph()
@@ -244,6 +245,7 @@ void FilterAudioProcessor::updateGraph()
                 mainProcessor->removeNode (slot);
             }
             
+            slot1Node = mainProcessor->addNode(new HighPassFilterProcessor());
             slots.set (i, mainProcessor->addNode(new HighPassFilterProcessor()));
             
             hasChanged = true;

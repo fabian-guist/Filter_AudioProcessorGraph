@@ -40,5 +40,5 @@ void HighPassFilterProcessor::updateFilter()
     /*float freqHp = *tree.getRawParameterValue("cutoffLp");
     float resHp = *tree.getRawParameterValue("resonanceLp");
     */
-    highPassFilter.state = dsp::IIR::Coefficients<float>::makeHighPass(44100, 20000, 0.1f);
+    highPassFilter.state = dsp::IIR::Coefficients<float>::makeHighPass(20.0f, 1.0f, 0.1f);
 }

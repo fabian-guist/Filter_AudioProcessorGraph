@@ -41,5 +41,5 @@ void LowPassFilterProcessor::updateFilter()
     /*float freqLp = *tree.getRawParameterValue("cutoffLp");
     float resLp = *tree.getRawParameterValue("resonanceLp");*/
     
-    lowPassFilter.state = dsp::IIR::Coefficients<float>::makeLowPass(44100, 20000, 0.1f);
+    lowPassFilter.state = dsp::IIR::Coefficients<float>::makeLowPass(20.0f, 1.0f, 0.1f);
 }

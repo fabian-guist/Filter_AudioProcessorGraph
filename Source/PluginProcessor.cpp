@@ -10,8 +10,9 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "LowPassFilterProcessor.h"
-#include "HighPassFilterProcessor.h"
+#include "Gain.h"
+#include "Oscilator.h"
+#include "Filter.h"
 
 //==============================================================================
 FilterAudioProcessor::FilterAudioProcessor()
@@ -28,26 +29,15 @@ FilterAudioProcessor::FilterAudioProcessor()
 , mainProcessor  (new AudioProcessorGraph())
 #endif
 {
-    NormalisableRange<float> cutoffRange (20.0f, 20000.0f);
-    NormalisableRange<float> resRange (1.0f, 5.0f);
-    
-    NormalisableRange<float> boolRange (0.0f, 1.0f);
     NormalisableRange<float> choiceRange (0.0f,3.0f);
-    
-    tree.createAndAddParameter("slot1Cutoff", "Slot1Cutoff", "Slot1Cutoff", cutoffRange, 600.0f, nullptr, nullptr);
-    tree.createAndAddParameter("slot1Resonance", "Slot1Resonance", "Slot1Resonance", resRange, 1.0f, nullptr, nullptr);
-    
-    tree.createAndAddParameter("slot2Cutoff", "Slot2Cutoff", "Slot2Cutoff", cutoffRange, 600.0f, nullptr, nullptr);
-    tree.createAndAddParameter("slot2Resonance", "Slot2Resonance", "Slot2Resonance", resRange, 1.0f, nullptr, nullptr);
-    
-    tree.createAndAddParameter("slot1Mute", "Slot1Mute", "Slot1Mute", boolRange, 1.0f, nullptr, nullptr);
-    tree.createAndAddParameter("slot2Mute", "Slot2Mute", "Slot2Mute", boolRange, 1.0f, nullptr, nullptr);
     
     tree.createAndAddParameter("processorSlot1", "ProcessorSlot1", "ProcessorSlot1", choiceRange, 0.0f, nullptr, nullptr);
     
     tree.createAndAddParameter("processorSlot2", "ProcessorSlot2", "ProcessorSlot2", choiceRange, 0.0f, nullptr, nullptr);
     
-    tree.state = ValueTree("SynthTree");
+    tree.createAndAddParameter("processorSlot3", "ProcessorSlot3", "ProcessorSlot3", choiceRange, 0.0f, nullptr, nullptr);
+    
+    tree.state = ValueTree("Tree");
 }
 
 FilterAudioProcessor::~FilterAudioProcessor()
@@ -159,16 +149,6 @@ void FilterAudioProcessor::connectMidiNodes()
                                   });
 }
 
-dsp::ProcessSpec FilterAudioProcessor::setUpSpec(double sampleRate, int samplesPerBlock)
-{
-    dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = getTotalNumInputChannels();
-    
-    return spec;
-}
-
 void FilterAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
@@ -176,29 +156,18 @@ void FilterAudioProcessor::releaseResources()
     mainProcessor->releaseResources();
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
 bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-#if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-#else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+    if (layouts.getMainInputChannelSet()  == AudioChannelSet::disabled()
+        || layouts.getMainOutputChannelSet() == AudioChannelSet::disabled())
+        return false;
+    
     if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
         && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
     
-    // This checks if the input layout matches the output layout
-#if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-#endif
-    
-    return true;
-#endif
+    return layouts.getMainInputChannelSet() == layouts.getMainOutputChannelSet();
 }
-#endif
 
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
@@ -214,13 +183,17 @@ void FilterAudioProcessor::updateGraph()
     bool hasChanged = false;
     float* processorSlot1Choice = tree.getRawParameterValue("processorSlot1");
     float* processorSlot2Choice = tree.getRawParameterValue("processorSlot2");
+    float* processorSlot3Choice = tree.getRawParameterValue("processorSlot3");
     
     Array<float*> choices { processorSlot1Choice,
-        processorSlot2Choice};
+        processorSlot2Choice, processorSlot3Choice};
     
     ReferenceCountedArray<Node> slots;
     slots.add (slot1Node);
     slots.add (slot2Node);
+    slots.add (slot3Node);
+    
+    ReferenceCountedArray<Node> activeSlots;
     
     for(int i = 0; i < choices.size(); i++)
     {
@@ -240,13 +213,12 @@ void FilterAudioProcessor::updateGraph()
         {
             if (slot != nullptr)
             {
-                if (slot->getProcessor()->getName() == "Highpass")
+                if (slot->getProcessor()->getName() == "Oscilator")
                     continue;
                 mainProcessor->removeNode (slot);
             }
             
-            slot1Node = mainProcessor->addNode(new HighPassFilterProcessor());
-            slots.set (i, mainProcessor->addNode(new HighPassFilterProcessor()));
+            slots.set (i, mainProcessor->addNode(new OscilatorProcessor()));
             
             hasChanged = true;
         }
@@ -254,11 +226,11 @@ void FilterAudioProcessor::updateGraph()
         {
             if (slot != nullptr)
             {
-                if (slot->getProcessor()->getName() == "Lowpass")
+                if (slot->getProcessor()->getName() == "Gain")
                     continue;
                 mainProcessor->removeNode (slot);
             }
-            slots.set (i, mainProcessor->addNode(new LowPassFilterProcessor()));
+            slots.set (i, mainProcessor->addNode(new GainProcessor()));
             hasChanged = true;
         }
         else if (*choice == 3.0f)
@@ -281,8 +253,6 @@ void FilterAudioProcessor::updateGraph()
         for (auto connection : mainProcessor->getConnections()) // [5]
             mainProcessor->removeConnection (connection);
         
-        ReferenceCountedArray<Node> activeSlots;
-
         for (auto slot : slots)
         {
             if (slot != nullptr)
@@ -323,17 +293,9 @@ void FilterAudioProcessor::updateGraph()
                 mainProcessor->addConnection (
                                               {
                                                   { activeSlots.getLast()->nodeID, channel },
-                                                  { audioInputNode->nodeID, channel }
+                                                  { audioOutputNode->nodeID, channel }
                                               });
             }
-            std::cout << "======================"<< std::endl;
-            
-            for (auto node : mainProcessor->getNodes()){
-                std::cout << node->nodeID << std::endl;
-                std::cout << node->getProcessor()->getName() << std::endl;
-                std::cout << ""<< std::endl;
-            }
-            std::cout << "+++++++++++++++++++++++"<< std::endl;
         }
         connectMidiNodes();
         for (auto node : mainProcessor->getNodes()){
@@ -341,6 +303,7 @@ void FilterAudioProcessor::updateGraph()
         }
         slot1Node = slots.getUnchecked (0);
         slot2Node = slots.getUnchecked (1);
+        slot3Node = slots.getUnchecked (2);
     }
 }
 

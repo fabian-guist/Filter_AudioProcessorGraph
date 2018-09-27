@@ -7,7 +7,7 @@
 		<key>Filter - AU.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 		<key>Filter - All.xcscheme</key>
 		<dict>
@@ -22,7 +22,7 @@
 		<key>Filter - VST.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

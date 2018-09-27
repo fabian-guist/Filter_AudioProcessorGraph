@@ -8,11 +8,11 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.yourcompany.Filter</string>
+    <string>com.yourcompany.AudioProcessorGraph</string>
     <key>CFBundleName</key>
-    <string>Filter</string>
+    <string>AudioProcessorGraph</string>
     <key>CFBundleDisplayName</key>
-    <string>Filter</string>
+    <string>AudioProcessorGraph</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleSignature</key>
@@ -29,11 +29,11 @@
     <array>
       <dict>
         <key>name</key>
-        <string>yourcompany: Filter</string>
+        <string>yourcompany: AudioProcessorGraph</string>
         <key>description</key>
-        <string>Filter</string>
+        <string>AudioProcessorGraph</string>
         <key>factoryFunction</key>
-        <string>FilterAUFactory</string>
+        <string>AudioProcessorGraphAUFactory</string>
         <key>manufacturer</key>
         <string>Manu</string>
         <key>type</key>

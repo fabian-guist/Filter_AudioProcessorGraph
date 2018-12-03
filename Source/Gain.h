@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    LowPassFilterProcessor.h
-    Created: 29 Jul 2018 4:26:18pm
-    Author:  Fabian Guist
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"

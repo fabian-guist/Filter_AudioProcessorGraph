@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="JBdQXh" name="AudioProcessorGraph" projectType="audioplug"
-              jucerVersion="5.3.2">
+              jucerVersion="5.3.1">
   <MAINGROUP id="x8FGeP" name="AudioProcessorGraph">
     <GROUP id="{46135809-9000-DCE7-CFC4-B027CA2483A4}" name="Source">
       <FILE id="OWsEU9" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>

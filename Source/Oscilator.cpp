@@ -1,12 +1,3 @@
-/*
-  ==============================================================================
-
-    HighPassFilterProcessor.cpp
-    Created: 29 Jul 2018 4:26:07pm
-    Author:  Fabian Guist
-
-  ==============================================================================
-*/
 #include "Oscilator.h"
 
 OscilatorProcessor::OscilatorProcessor() : FilterAudioProcessor()
@@ -17,12 +8,18 @@ OscilatorProcessor::OscilatorProcessor() : FilterAudioProcessor()
 
 void OscilatorProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    dsp::ProcessSpec spec { sampleRate, static_cast<uint32> (samplesPerBlock) };
+    dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    
     oscillator.prepare (spec);
 }
 
 void OscilatorProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
+    
     dsp::AudioBlock<float> block (buffer);
     dsp::ProcessContextReplacing<float> context (block);
     oscillator.process (context);

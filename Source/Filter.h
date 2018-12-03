@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    Filter.h
-    Created: 24 Sep 2018 3:50:59pm
-    Author:  Fabian Guist
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -22,5 +12,5 @@ public:
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
     
 private:
-    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> filter;
+    dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> highpassFilter;
 };

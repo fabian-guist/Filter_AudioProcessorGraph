@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    HighPassFilterProcessor.h
-    Created: 29 Jul 2018 4:26:07pm
-    Author:  Fabian Guist
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"

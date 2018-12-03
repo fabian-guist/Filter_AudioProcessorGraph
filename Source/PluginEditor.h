@@ -1,21 +1,8 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
-//==============================================================================
-/**
-*/
 class FilterAudioProcessorEditor  : public AudioProcessorEditor,
 public Slider::Listener
 {

@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -15,9 +5,6 @@
 using AudioGraphIOProcessor = AudioProcessorGraph::AudioGraphIOProcessor;
 using Node = AudioProcessorGraph::Node;
 
-//==============================================================================
-/**
-*/
 class FilterAudioProcessor  : public AudioProcessor
 {
 public:

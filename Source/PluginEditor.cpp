@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -68,15 +58,11 @@ void FilterAudioProcessorEditor::sliderValueChanged(Slider* slider)
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 }
 
 void FilterAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-    
     slot1Label.setBounds(10, 0, 100, 20);
     slot1Combobox.setBounds(10, 30, 100, 20);
     
